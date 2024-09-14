@@ -1,4 +1,9 @@
 
+using Entities.Context;
+using Entities.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 namespace TulosAPI
 {
     public class Program
@@ -8,11 +13,13 @@ namespace TulosAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<TulosDbContext>(
+    options => options.UseSqlServer(@"Server=(LocalDb)\MSSQLLocalDB;Database=ChatRoomDb;Trusted_Connection=True;TrustServerCertificate=True;"));
+            builder.Services.AddAuthorization();
+            builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<TulosDbContext>();
 
             var app = builder.Build();
 
@@ -27,9 +34,8 @@ namespace TulosAPI
 
             app.UseAuthorization();
 
-
             app.MapControllers();
-
+            app.MapIdentityApi<ApplicationUser>();
             app.Run();
         }
     }
