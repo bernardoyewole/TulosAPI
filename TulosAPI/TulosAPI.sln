@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TulosAPI", "TulosAPI.csproj", "{7289872F-F564-4FD8-AFBC-1B8668D4CF96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "..\DAL\DAL.csproj", "{7A85EB83-DEF8-467A-ABCC-5F8D725CE359}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "..\Entities\Entities.csproj", "{BA620180-EAD7-430A-860B-744F51800917}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7289872F-F564-4FD8-AFBC-1B8668D4CF96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7289872F-F564-4FD8-AFBC-1B8668D4CF96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7289872F-F564-4FD8-AFBC-1B8668D4CF96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7289872F-F564-4FD8-AFBC-1B8668D4CF96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A85EB83-DEF8-467A-ABCC-5F8D725CE359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A85EB83-DEF8-467A-ABCC-5F8D725CE359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A85EB83-DEF8-467A-ABCC-5F8D725CE359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A85EB83-DEF8-467A-ABCC-5F8D725CE359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA620180-EAD7-430A-860B-744F51800917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA620180-EAD7-430A-860B-744F51800917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA620180-EAD7-430A-860B-744F51800917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA620180-EAD7-430A-860B-744F51800917}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8829A744-1A3C-47DD-867F-A2AE43D14880}
+	EndGlobalSection
+EndGlobal

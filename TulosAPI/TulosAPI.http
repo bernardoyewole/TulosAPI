@@ -1,0 +1,6 @@
+@TulosAPI_HostAddress = http://localhost:5221
+
+GET {{TulosAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
