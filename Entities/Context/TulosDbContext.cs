@@ -24,6 +24,10 @@ namespace Entities.Context
 
     public class TulosDbContext : IdentityDbContext<ApplicationUser>, ITulosDbContext
     {
+        public TulosDbContext()
+        {
+        }
+
         public TulosDbContext(DbContextOptions<TulosDbContext> options) : base(options) { }
 
         public DbSet<CartItem> CartItems { get; set;}
