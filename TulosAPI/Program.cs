@@ -2,7 +2,11 @@
 using Entities.Context;
 using Entities.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using TulosAPI.Services;
+using IEmailSender = TulosAPI.Services.IEmailSender;
 
 namespace TulosAPI
 {
@@ -20,6 +24,29 @@ namespace TulosAPI
     options => options.UseSqlServer(@"Server=(LocalDb)\MSSQLLocalDB;Database=ChatRoomDb;Trusted_Connection=True;TrustServerCertificate=True;"));
             builder.Services.AddAuthorization();
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<TulosDbContext>();
+
+            // Add and configure CORS policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost3000", builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+            });
+
+            // Add email sender
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+            builder.Services.AddHttpClient("MailTrapApiClient", (services, client) =>
+            {
+                var mailSettings = services.GetRequiredService<IOptions<MailSettings>>().Value;
+                client.BaseAddress = new Uri(mailSettings.ApiBaseUrl);
+                client.DefaultRequestHeaders.Add("Api-Token", mailSettings.ApiToken);
+            });
 
             var app = builder.Build();
 
