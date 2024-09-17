@@ -114,6 +114,80 @@ namespace TulosAPI.Controllers
             }
         }
 
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                return BadRequest(new { message = "If the email exists and is confirmed, a password reset link will be sent." });
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Create a callback URL for password reset with query parameters
+            var callbackUrl = $"http://localhost:3000/resetPassword?email={model.Email}&code={resetToken}";
+
+            var mailData = new MailData
+            {
+                ToEmail = user.Email,
+                ToName = $"{user.FirstName} {user.LastName}",
+                Subject = "Reset your password",
+                Body = $"Please reset your password by clicking this link - {callbackUrl}"
+            };
+
+            // Send the password reset email
+            var emailSent = await _emailSender.SendMailAsync(mailData);
+
+            if (!emailSent)
+            {
+                return StatusCode(500, "Error sending password reset email. Please try again.");
+            }
+
+            return Ok(new { message = "Password reset email sent. Please check your email." });
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "Invalid request." });
+            }
+
+            // Check if the new password is the same as the current password
+            var isCurrentPassword = await _userManager.CheckPasswordAsync(user, model.NewPassword);
+            if (isCurrentPassword)
+            {
+                return BadRequest(new { message = "New password cannot be the same as the old one." });
+            }
+
+            // Reset the user's password using the provided token
+            var result = await _userManager.ResetPasswordAsync(user, model.ResetCode, model.NewPassword);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Password has been reset successfully." });
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return BadRequest(ModelState);
+        }
+
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
