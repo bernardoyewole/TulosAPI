@@ -25,6 +25,11 @@ namespace TulosAPI
             builder.Services.AddAuthorization();
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<TulosDbContext>();
 
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+            });
+
             // Add and configure CORS policy
             builder.Services.AddCors(options =>
             {
@@ -56,6 +61,9 @@ namespace TulosAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Apply CORS policy
+            app.UseCors("AllowLocalhost3000");
 
             app.UseHttpsRedirection();
 

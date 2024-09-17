@@ -25,7 +25,7 @@ namespace TulosAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] Register model)
         {
             if (ModelState.IsValid)
             {
@@ -54,7 +54,7 @@ namespace TulosAPI.Controllers
                         ToEmail = model.Email,
                         ToName = model.FirstName + " " + model.LastName,
                         Subject = "Confirm your email",
-                        Body = $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>."
+                        Body = $"Please activate your account by clicking this link -  {callbackUrl}."
                     };
 
                     // Send confirmation email
@@ -63,7 +63,8 @@ namespace TulosAPI.Controllers
                     if (!emailSent)
                     {
                         // Handle failure in sending email
-                        return StatusCode(500, "Error sending confirmation email. Please try again.");
+                        await _userManager.DeleteAsync(user);
+                        return StatusCode(500, "Error sending account activation email. Please try again.");
                     }
 
                     return Ok(new { message = "User registered successfully. Please check your email to confirm your account." });
@@ -94,10 +95,30 @@ namespace TulosAPI.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
             {
-                return Ok("Email confirmed successfully.");
+                return Ok("Account activated successfully.");
             }
 
             return BadRequest("Error confirming email.");
+        }
+
+        [HttpPost("checkUser")]
+        public async Task<IActionResult> CheckUser([FromBody] string userEmail)
+        {
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return Ok("User not found");
+            } else
+            {
+                return Ok("User confirmed successfully");
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new { message = "User logged out successfully" });
         }
     }
 }
