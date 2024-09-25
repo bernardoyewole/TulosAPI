@@ -187,8 +187,50 @@ namespace TulosAPI.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPost("changePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid request.");
+            }
 
-        [HttpPost("logout")]
+            // Find the user by email
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Verify the current password
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!passwordCheck)
+            {
+                return BadRequest("Current password is incorrect.");
+            }
+
+            // Check if new password is same as old password
+            var newPasswordCheck = await _userManager.CheckPasswordAsync(user, model.NewPassword);
+            if (newPasswordCheck)
+            {
+                return BadRequest("New password cannot be same as old  password");
+            }
+
+            // Change the password
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
+
+            return Ok("Password changed successfully.");
+        }
+
+    [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

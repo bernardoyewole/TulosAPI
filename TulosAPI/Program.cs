@@ -1,4 +1,5 @@
 
+using DAL;
 using Entities.Context;
 using Entities.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,8 @@ namespace TulosAPI
     options => options.UseSqlServer(@"Server=(LocalDb)\MSSQLLocalDB;Database=ChatRoomDb;Trusted_Connection=True;TrustServerCertificate=True;"));
             builder.Services.AddAuthorization();
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<TulosDbContext>();
+
+            builder.Services.AddScoped<IGenericRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
 
             builder.Services.Configure<IdentityOptions>(options =>
             {
