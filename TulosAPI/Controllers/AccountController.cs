@@ -230,7 +230,7 @@ namespace TulosAPI.Controllers
             return Ok("Password changed successfully.");
         }
 
-    [HttpPost("logout")]
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

@@ -27,6 +27,7 @@ namespace TulosAPI
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<TulosDbContext>();
 
             builder.Services.AddScoped<IGenericRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
+            builder.Services.AddScoped<IGenericRepository<Favorite>, GenericRepository<Favorite>>();
 
             builder.Services.Configure<IdentityOptions>(options =>
             {
