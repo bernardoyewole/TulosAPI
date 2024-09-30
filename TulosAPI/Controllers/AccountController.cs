@@ -131,7 +131,7 @@ namespace TulosAPI.Controllers
             var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             // Create a callback URL for password reset with query parameters
-            var callbackUrl = $"http://localhost:3000/resetPassword?email={model.Email}&code={resetToken}";
+            var callbackUrl = $"http://https://tulos-theta.vercel.app/resetPassword?email={model.Email}&code={resetToken}";
 
             var mailData = new MailData
             {

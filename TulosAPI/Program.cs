@@ -4,6 +4,7 @@ using Entities.Context;
 using Entities.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using TulosAPI.Services;
@@ -21,9 +22,18 @@ namespace TulosAPI
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<TulosDbContext>(
-    options => options.UseSqlServer(@"Server=(LocalDb)\MSSQLLocalDB;Database=ChatRoomDb;Trusted_Connection=True;TrustServerCertificate=True;"));
-            builder.Services.AddAuthorization();
+
+            var conStrBuilder = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("DefaultConnection"));
+            // Replace the password using Secret Manager
+            conStrBuilder.UserID = builder.Configuration["DbUserId"];
+            conStrBuilder.Password = builder.Configuration["DbPassword"];
+
+            var connectionString = conStrBuilder.ConnectionString; // Get the complete connection string
+
+            // Add DbContext with dynamically built connection string
+            builder.Services.AddDbContext<TulosDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<TulosDbContext>();
 
             builder.Services.AddScoped<IGenericRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
@@ -37,9 +47,9 @@ namespace TulosAPI
             // Add and configure CORS policy
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowLocalhost3000", builder =>
+                options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000")
+                    builder.WithOrigins("http://localhost:3000", "https://tulos-theta.vercel.app")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();
@@ -49,7 +59,15 @@ namespace TulosAPI
             // Add email sender
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+            // Configure MailSettings, pulling sensitive values from Secret Manager
+            builder.Services.Configure<MailSettings>(mailSettings =>
+            {
+                builder.Configuration.GetSection("MailSettings").Bind(mailSettings);
+                // Use Secret Manager to replace sensitive fields
+                mailSettings.ApiToken = builder.Configuration["MailSettings:ApiToken"];
+            });
+
+            // Configure HttpClient for MailTrap API with injected secrets
             builder.Services.AddHttpClient("MailTrapApiClient", (services, client) =>
             {
                 var mailSettings = services.GetRequiredService<IOptions<MailSettings>>().Value;
@@ -59,15 +77,16 @@ namespace TulosAPI
 
             var app = builder.Build();
 
+            app.UseSwagger();
+                app.UseSwaggerUI();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
 
             // Apply CORS policy
-            app.UseCors("AllowLocalhost3000");
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 
