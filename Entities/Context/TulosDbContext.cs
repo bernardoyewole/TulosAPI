@@ -27,9 +27,9 @@ namespace Entities.Context
     {
         private readonly IConfiguration _configuration;
 
-        public TulosDbContext()
-        {
-        }
+        //public TulosDbContext()
+        //{
+        //}
 
         public TulosDbContext(DbContextOptions<TulosDbContext> options, IConfiguration configuration) : base(options)
         {

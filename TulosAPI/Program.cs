@@ -49,7 +49,7 @@ namespace TulosAPI
             {
                 options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000", "https://tulos-theta.vercel.app")
+                    builder.WithOrigins("http://localhost:3000", "https://tulos.bernardoyewole.com")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();
@@ -78,7 +78,7 @@ namespace TulosAPI
             var app = builder.Build();
 
             app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwaggerUI();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

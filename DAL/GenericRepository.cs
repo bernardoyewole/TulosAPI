@@ -10,31 +10,31 @@ namespace DAL
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private TulosDbContext context;
-        private DbSet<T> entity;
+        private readonly TulosDbContext _context;
+        private readonly DbSet<T> _entity;
 
-        public GenericRepository()
+        public GenericRepository(TulosDbContext context)
         {
-            context = new TulosDbContext();
-            entity = context.Set<T>();
+            _context = context;
+            _entity = _context.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await entity.ToListAsync();
+            return await _entity.ToListAsync();
         }
 
         public async Task<T> GetById(object id)
         {
-            return await entity.FindAsync(id);
+            return await _entity.FindAsync(id);
         }
 
         public Task Add(T obj)
         {
             if (obj != null)
             {
-                entity.Add(obj);
-                context.SaveChangesAsync();
+                _entity.Add(obj);
+                _context.SaveChangesAsync();
                 return Task.CompletedTask;
             }
 
@@ -45,9 +45,9 @@ namespace DAL
         {
             if (obj != null)
             {
-                entity.Attach(obj);
-                context.Entry(obj).State = EntityState.Modified;
-                context.SaveChangesAsync();
+                _entity.Attach(obj);
+                _context.Entry(obj).State = EntityState.Modified;
+                _context.SaveChangesAsync();
                 return Task.CompletedTask;
             }
 
@@ -56,12 +56,12 @@ namespace DAL
 
         public async Task<bool> Delete(object id)
         {
-            T existingObject = await entity.FindAsync(id);
+            T existingObject = await _entity.FindAsync(id);
 
             if (existingObject != null)
             {
-                entity.Remove(existingObject);
-                context.SaveChangesAsync();
+                _entity.Remove(existingObject);
+                _context.SaveChangesAsync();
                 return true;
             }
 
@@ -70,7 +70,7 @@ namespace DAL
 
         public void Save()
         {
-            context.SaveChangesAsync();
+            _context.SaveChangesAsync();
         }
     }
 }
