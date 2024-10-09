@@ -38,6 +38,7 @@ namespace TulosAPI
 
             builder.Services.AddScoped<IGenericRepository<ApplicationUser>, GenericRepository<ApplicationUser>>();
             builder.Services.AddScoped<IGenericRepository<Favorite>, GenericRepository<Favorite>>();
+            builder.Services.AddScoped<IGenericRepository<CartItem>, GenericRepository<CartItem>>();
 
             builder.Services.Configure<IdentityOptions>(options =>
             {

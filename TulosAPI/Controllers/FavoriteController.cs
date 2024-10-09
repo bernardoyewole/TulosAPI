@@ -12,15 +12,11 @@ namespace TulosAPI.Controllers
     {
         private IGenericRepository<Favorite> _genericFavoriteRepository;
         private IGenericRepository<ApplicationUser> _genericUserRepository;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public FavoriteController(IGenericRepository<Favorite> genericFavoriteRepository, IGenericRepository<ApplicationUser> genericUserRepository, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public FavoriteController(IGenericRepository<Favorite> genericFavoriteRepository, IGenericRepository<ApplicationUser> genericUserRepository)
         {
             _genericFavoriteRepository = genericFavoriteRepository;
             _genericUserRepository = genericUserRepository;
-            _signInManager = signInManager;
-            _userManager = userManager;
         }
 
         [HttpGet]
