@@ -26,7 +26,8 @@ namespace TulosAPI.Controllers
 
             if (userCartItems == null || userCartItems.Count == 0)
             {
-                return Ok("No cart items found for this user.");
+                List<CartItem> emptyCart = new List<CartItem>();
+                return Ok(emptyCart);
             }
 
             return Ok(userCartItems);
@@ -41,23 +42,27 @@ namespace TulosAPI.Controllers
                 return BadRequest("Invalid cart item.");
             }
 
-            // Check if item already exists in the cart for this user
+            // If the item already exists, update the quantity instead
             var existingCartItems = await _genericCartRepository.GetAll();
             var existingItem = existingCartItems
                 .FirstOrDefault(ci => ci.UserEmail == cartItem.UserEmail && ci.HmProductId == cartItem.HmProductId && ci.Size == cartItem.Size && ci.Color == cartItem.Color);
 
             if (existingItem != null)
             {
-                // If the item already exists, update the quantity instead
-                existingItem.Quantity += cartItem.Quantity;
+                // Increase the quantity if the item already exists
+                existingItem.Quantity += 1;
                 await _genericCartRepository.Update(existingItem);
                 return Ok("Cart item updated with new quantity.");
             }
 
-            // Add new cart item
+            // Ensure that the Quantity is set to 1 if it's a new item or if quantity is not provided
+            cartItem.Quantity = cartItem.Quantity > 0 ? cartItem.Quantity : 1;
+
+            // Add the new cart item with quantity set to 1
             await _genericCartRepository.Add(cartItem);
             return Ok("Product added to cart.");
         }
+
 
         // Update cart item (change quantity)
         [HttpPut("updateCart/{id}")]
@@ -80,7 +85,7 @@ namespace TulosAPI.Controllers
             return Ok("Cart item updated successfully.");
         }
 
-        // Remove item from cart
+        // Remove item or reduce quantity from cart
         [HttpDelete("removeFromCart/{id}")]
         public async Task<IActionResult> RemoveFromCart(int id)
         {
@@ -90,13 +95,51 @@ namespace TulosAPI.Controllers
                 return NotFound("Cart item not found.");
             }
 
-            var isDeleted = await _genericCartRepository.Delete(id);
-            if (isDeleted)
+            // If item exists, reduce the quantity
+            if (existingCartItem.Quantity > 1)
             {
-                return Ok("Cart item removed successfully.");
+                existingCartItem.Quantity -= 1;
+
+                await _genericCartRepository.Update(existingCartItem);
+
+                return Ok("Cart item quantity reduced by 1.");
+            }
+            else
+            {
+                // If the quantity is 1 or less, remove the item from the cart
+                var isDeleted = await _genericCartRepository.Delete(id);
+                if (isDeleted)
+                {
+                    return Ok("Cart item removed successfully.");
+                }
+
+                return StatusCode(500, "Error removing cart item.");
+            }
+        }
+
+        [HttpDelete("clearCart/{email}")]
+        public async Task<IActionResult> ClearCart(string email)
+        {
+            // Retrieve all cart items for the specified user
+            var cartItems = await _genericCartRepository.GetAll();
+            var userCartItems = cartItems.Where(item => item.UserEmail == email).ToList();
+
+            if (userCartItems.Count == 0)
+            {
+                return NotFound("No cart items found for this user.");
             }
 
-            return StatusCode(500, "Error removing cart item.");
+            // Iterate over the user's cart items and delete each one
+            foreach (var cartItem in userCartItems)
+            {
+                var isDeleted = await _genericCartRepository.Delete(cartItem.Id);
+                if (!isDeleted)
+                {
+                    return StatusCode(500, "Error occurred while clearing the cart.");
+                }
+            }
+
+            return Ok("All cart items removed successfully.");
         }
     }
 }

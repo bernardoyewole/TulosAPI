@@ -21,5 +21,11 @@ namespace Entities.Entities
 
         [Precision(18, 2)]
         public decimal Price { get; set; }
+
+        public string? Size { get; set; }
+
+        public string? Color { get; set; }
+
+        public List<string> SizeVariants { get; set; }
     }
 }

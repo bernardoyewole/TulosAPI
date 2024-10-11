@@ -4,6 +4,7 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entities.Migrations
 {
     [DbContext(typeof(TulosDbContext))]
-    partial class TulosDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241010182207_TulosCore4")]
+    partial class TulosCore4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,6 +151,7 @@ namespace Entities.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HmProductId")
@@ -167,9 +171,6 @@ namespace Entities.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Size")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SizeVariants")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
