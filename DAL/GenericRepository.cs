@@ -29,25 +29,25 @@ namespace DAL
             return await _entity.FindAsync(id);
         }
 
-        public Task Add(T obj)
+        public async Task<Task> Add(T obj)
         {
             if (obj != null)
             {
                 _entity.Add(obj);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return Task.CompletedTask;
             }
 
             return null;
         }
 
-        public Task Update(T obj)
+        public async Task<Task> Update(T obj)
         {
             if (obj != null)
             {
                 _entity.Attach(obj);
                 _context.Entry(obj).State = EntityState.Modified;
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return Task.CompletedTask;
             }
 
@@ -61,7 +61,7 @@ namespace DAL
             if (existingObject != null)
             {
                 _entity.Remove(existingObject);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
 

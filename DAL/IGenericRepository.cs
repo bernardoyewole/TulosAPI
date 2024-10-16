@@ -12,9 +12,9 @@ namespace DAL
 
         Task<T> GetById(object id);
 
-        Task Add(T obj);
+        Task<Task> Add(T obj);
 
-        Task Update(T obj);
+        Task<Task> Update(T obj);
 
         Task<bool> Delete(object id);
 

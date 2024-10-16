@@ -27,5 +27,8 @@ namespace Entities.Entities
         public string Size { get; set; }
 
         public string Color { get; set; }
+
+        public List<string> SizeVariants { get; set; }
+
     }
 }
